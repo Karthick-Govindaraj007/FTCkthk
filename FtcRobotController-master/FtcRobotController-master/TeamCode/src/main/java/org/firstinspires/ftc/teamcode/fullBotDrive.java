@@ -164,7 +164,7 @@ public class fullBotDrive extends LinearOpMode {
                 if (gamepad2.left_stick_button) {
 
                     // Take into account the current position and choose a move after adding one to the position we want it to be.
-                    switch (++posClaw % 4) {
+                    switch (++posClaw % 3) {
 
                         // Choice 0 is wrist on ground, open claw.
                         case 0: {
@@ -172,7 +172,7 @@ public class fullBotDrive extends LinearOpMode {
                             clawWrist.setPosition(0.70);
 
                             // Wait a bit.
-                            wait(500);
+                            // wait(500);
 
                             // Open claw.
                             clawLeft.setPosition(0.50);
