@@ -128,13 +128,15 @@ public class fullBotDrive extends LinearOpMode {
                 planeLauncher.setPosition(0.5);
             }
 
+            // TODO: Add time since last press implementation.
+
             // If gamepad 2 dpad left is pressed, toggle between true and false for autoPlace.
-            if (gamepad2.dpad_left && !autoPlace) {
+            if (gamepad2.dpad_left && gamepad2.x) {
                 autoPlace = !autoPlace;
             }
 
             // If gamepad 2 dpad right is pressed, toggle between true and false for locksActive.
-            if (gamepad2.dpad_right) {
+            if (gamepad2.dpad_right && gamepad2.y) {
                 locksActive = !locksActive;
             }
 
@@ -162,30 +164,47 @@ public class fullBotDrive extends LinearOpMode {
                 if (gamepad2.left_stick_button) {
 
                     // Take into account the current position and choose a move after adding one to the position we want it to be.
-                    switch (++posClaw % 3) {
+                    switch (++posClaw % 4) {
 
-                        // Choice 0 is pick up pixel, wrist back, raise arm.
+                        // Choice 0 is wrist on ground, open claw.
                         case 0: {
+
+                            // Put slider arm down.
+                            sliderArm.setTargetPosition(0);
+
+                            // Put wrist down.
+                            clawWrist.setPosition(0.70);
+
+                            // Wait a bit.
+                            wait(500);
+
+                            // Open claw.
+                            clawLeft.setPosition(0.50);
+                            clawRight.setPosition(0.35);
+                        }
+
+                        // Choice 1 is pick up pixel, wrist back, raise arm.
+                        case 1: {
                             // Close claw.
                             clawLeft.setPosition(0.25);
                             clawRight.setPosition(0.15);
 
                             // Wait a bit.
-                            sleep(150);
+                            sleep(500);
 
                             // Lift arm and wrist back.
                             clawWrist.setPosition(0.30);
-                            sliderArm.setTargetPosition(400);
+                            sliderArm.setTargetPosition(100);
                             break;
                         }
 
-                        // Choice 1 extends slider, places pixel, retracts slider, moves bot back.
-                        case 1: {
+                        // Choice 2 extends slider, places pixel, retracts slider, moves bot back.
+                        case 2: {
                             // Extend viper slider forward.
-                            viperSlider.setPower(0.25);
+                            viperSlider.setPower(-0.50);
 
                             // Wait for a bit.
-                            sleep(200);
+                            sleep(1000);
 
                             // Stop slider.
                             viperSlider.setPower(0);
@@ -195,37 +214,31 @@ public class fullBotDrive extends LinearOpMode {
                             clawRight.setPosition(0.35);
 
                             // Wait for a bit.
-                            sleep(100);
+                            sleep(500);
 
                             // Move robot back.
-                            frontLeft.setPower(-0.5);
-                            frontRight.setPower(-0.5);
-                            backLeft.setPower(-0.5);
-                            backRight.setPower(-0.5);
+                            frontLeft.setPower(-0.15);
+                            frontRight.setPower(-0.15);
+                            backLeft.setPower(-0.15);
+                            backRight.setPower(-0.15);
 
                             // Retract slider.
-                            viperSlider.setPower(-0.25);
+                            viperSlider.setPower(0.50);
+
+                            // Close claw.
+                            clawLeft.setPosition(0.25);
+                            clawRight.setPosition(0.15);
 
                             // Wait for a bit.
-                            sleep(200);
+                            sleep(1000);
+
+                            // Stop viper slider.
+                            viperSlider.setPower(0);
 
                             // Lower arm but keep off ground.
-                            sliderArm.setTargetPosition(400);
+                            sliderArm.setTargetPosition(100);
 
                             break;
-                        }
-
-                        // Choice 2 puts the slider arm down, wrist down, opens claw.
-                        case 2: {
-                            // Put the slider arm on the ground.
-                            sliderArm.setTargetPosition(0);
-
-                            // Put the wrist on the ground.
-                            clawWrist.setPosition(0.65);
-
-                            // Open the claw.
-                            clawLeft.setPosition(0.50);
-                            clawRight.setPosition(0.35);
                         }
                     }
                 }
@@ -251,19 +264,15 @@ public class fullBotDrive extends LinearOpMode {
                     if (gamepad2.left_stick_y != 0) {
 
                         // Check if the position to be set is less than 0 and set it to 0.
+                        // 0.73 is the position where the claw is straight.
+                        // Otherwise, set the position to the current added to the value of the stick.
                         if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 < 0.29) {
                             clawWrist.setPosition(0.30);
                         } // 0.30 is the position just before the claw will touch the viper.
 
                         // Check if the position is set to more than 1 and set it to 1.
-                        else if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 > 0.73) {
-                            clawWrist.setPosition(0.73);
-                        } // 0.73 is the position where the claw is straight.
-
-                        // Otherwise, set the position to the current added to the value of the stick.
-                        else {
-                            clawWrist.setPosition(clawWrist.getPosition() - gamepad2.left_stick_y / 250);
-                        }
+                        else
+                            clawWrist.setPosition(Math.min(clawWrist.getPosition() - gamepad2.left_stick_y / 250, 0.73));
                     }
                 } else {
                     if (gamepad2.left_stick_y != 0) {
@@ -281,9 +290,10 @@ public class fullBotDrive extends LinearOpMode {
                 }
             }
 
+            
+
             // Have claw change direction as viper moves.
             // Have slider change length of travel as arm moves.
-
         }
     }
 }
