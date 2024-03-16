@@ -75,7 +75,7 @@ public class fullBotDrive extends LinearOpMode {
         boolean autoPlace = true;
 
         // Make an int to store the current position of the claw setup.
-        int posClaw = -1;
+        int posClaw = 0;
 
         // Only Start Code And Movement When Start Button Is Pressed
         waitForStart();
@@ -140,23 +140,9 @@ public class fullBotDrive extends LinearOpMode {
                 locksActive = !locksActive;
             }
 
-//            // IF DOING CR SERVO
-//            // Check if the left stick on gamepad 2 is active and set it to the corresponding power.
-//            if (gamepad2.left_stick_y != 0) {
-//                clawWrist.setPower(speedFactor * gamepad2.left_stick_y);
-//            }
-//
-//            // Otherwise set the power to 0 and stop the wrist movement.
-//            else {
-//                clawWrist.setPower(0);
-//            }
-
-            // IF DOING REGULAR SERVO
-            // Check if the left stick on gamepad 2 is active.
-
             // Reset posClaw if right toggle is clicked down.
             if (gamepad2.right_stick_button) {
-                posClaw = -1;
+                posClaw = 0;
             }
 
             // If autoplace is active, pick up pixel automatically
@@ -164,19 +150,21 @@ public class fullBotDrive extends LinearOpMode {
                 if (gamepad2.left_stick_button) {
 
                     // Take into account the current position and choose a move after adding one to the position we want it to be.
-                    switch (++posClaw % 3) {
+                    switch (posClaw++ % 3) {
 
                         // Choice 0 is wrist on ground, open claw.
                         case 0: {
                             // Put wrist down.
-                            clawWrist.setPosition(0.70);
+                            clawWrist.setPosition(0.66);
 
                             // Wait a bit.
-                            // wait(500);
+                            sleep(500);
 
                             // Open claw.
                             clawLeft.setPosition(0.50);
                             clawRight.setPosition(0.35);
+
+                            break;
                         }
 
                         // Choice 1 is pick up pixel, wrist back, raise arm.
@@ -233,8 +221,6 @@ public class fullBotDrive extends LinearOpMode {
 
                             // Lower arm but keep off ground.
                             sliderArm.setTargetPosition(100);
-
-                            break;
                         }
                     }
                 }
@@ -254,20 +240,20 @@ public class fullBotDrive extends LinearOpMode {
                 // Set the viper slider to the current power of gamepad 2's right stick's y.
                 viperSlider.setPower(gamepad2.right_stick_y);
 
-                // Engage wrist with locks if the locks are active
+                // Engage wrist with locks if the locks are active.
                 if (locksActive) {
 
                     if (gamepad2.left_stick_y != 0) {
 
                         // Check if the position to be set is less than 0 and set it to 0.
-                        if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 < 0.29) {
+                        if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 < 0.30) {
                             clawWrist.setPosition(0.30);
                         } // 0.30 is the position just before the claw will touch the viper.
 
                         // Check if the position is set to more than 1 and set it to 1.
-                        else if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 > 0.73) {
-                            clawWrist.setPosition(0.73);
-                        } // 0.73 is the position where the claw is straight.
+                        else if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 > 0.66) {
+                            clawWrist.setPosition(0.66);
+                        } // 0.66 is the position where the claw is parallel to the ground.
 
                         // Otherwise, set the position to the current added to the value of the stick.
                         else {
