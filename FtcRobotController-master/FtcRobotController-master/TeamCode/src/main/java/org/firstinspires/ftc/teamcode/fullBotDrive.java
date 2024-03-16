@@ -168,12 +168,6 @@ public class fullBotDrive extends LinearOpMode {
 
                         // Choice 0 is wrist on ground, open claw.
                         case 0: {
-                            // Put wrist down.
-                            clawWrist.setPosition(0.70);
-
-                            // Wait a bit.
-                            wait(500);
-
                             // Open claw.
                             clawLeft.setPosition(0.50);
                             clawRight.setPosition(0.35);
