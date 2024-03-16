@@ -154,6 +154,13 @@ public class fullBotDrive extends LinearOpMode {
 
                         // Choice 0 is wrist on ground, open claw.
                         case 0: {
+
+                            // Put arm down.
+                            sliderArm.setTargetPosition(0);
+
+                            // Wait a bit.
+                            sleep(250);
+
                             // Put wrist down.
                             clawWrist.setPosition(0.66);
 
@@ -178,7 +185,7 @@ public class fullBotDrive extends LinearOpMode {
 
                             // Lift arm and wrist back.
                             clawWrist.setPosition(0.30);
-                            sliderArm.setTargetPosition(100);
+                            sliderArm.setTargetPosition(200);
                             break;
                         }
 
@@ -201,10 +208,10 @@ public class fullBotDrive extends LinearOpMode {
                             sleep(500);
 
                             // Move robot back.
-                            frontLeft.setPower(-0.15);
-                            frontRight.setPower(-0.15);
-                            backLeft.setPower(-0.15);
-                            backRight.setPower(-0.15);
+                            frontLeft.setPower(-0.25);
+                            frontRight.setPower(-0.25);
+                            backLeft.setPower(-0.25);
+                            backRight.setPower(-0.25);
 
                             // Retract slider.
                             viperSlider.setPower(0.50);
@@ -220,7 +227,7 @@ public class fullBotDrive extends LinearOpMode {
                             viperSlider.setPower(0);
 
                             // Lower arm but keep off ground.
-                            sliderArm.setTargetPosition(100);
+                            sliderArm.setTargetPosition(200);
                         }
                     }
                 }
