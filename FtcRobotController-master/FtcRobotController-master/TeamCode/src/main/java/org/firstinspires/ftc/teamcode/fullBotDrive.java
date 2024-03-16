@@ -271,8 +271,9 @@ public class fullBotDrive extends LinearOpMode {
                         } // 0.30 is the position just before the claw will touch the viper.
 
                         // Check if the position is set to more than 1 and set it to 1.
-                        else
+                        else {
                             clawWrist.setPosition(Math.min(clawWrist.getPosition() - gamepad2.left_stick_y / 250, 0.73));
+                        }
                     }
                 } else {
                     if (gamepad2.left_stick_y != 0) {
@@ -290,7 +291,7 @@ public class fullBotDrive extends LinearOpMode {
                 }
             }
 
-            
+
 
             // Have claw change direction as viper moves.
             // Have slider change length of travel as arm moves.
