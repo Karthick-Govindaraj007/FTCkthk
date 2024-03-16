@@ -213,10 +213,10 @@ public class fullBotDrive extends LinearOpMode {
                             sleep(500);
 
                             // Move robot back.
-                            frontLeft.setPower(-0.15);
-                            frontRight.setPower(-0.15);
-                            backLeft.setPower(-0.15);
-                            backRight.setPower(-0.15);
+                            frontLeft.setPower(-0.5);
+                            frontRight.setPower(-0.5);
+                            backLeft.setPower(-0.5);
+                            backRight.setPower(-0.5);
 
                             // Retract slider.
                             viperSlider.setPower(0.50);
