@@ -236,6 +236,19 @@ public class fullBotDrive extends LinearOpMode {
 
                             break;
                         }
+
+                        // Choice 3 puts the slider arm down, wrist down, opens claw.
+                        case 3: {
+                            // Put the slider arm on the ground.
+                            sliderArm.setTargetPosition(0);
+
+                            // Put the wrist on the ground.
+                            clawWrist.setPosition(0.70);
+
+                            // Open the claw.
+                            clawLeft.setPosition(0.50);
+                            clawRight.setPosition(0.35);
+                        }
                     }
                 }
             } else {
