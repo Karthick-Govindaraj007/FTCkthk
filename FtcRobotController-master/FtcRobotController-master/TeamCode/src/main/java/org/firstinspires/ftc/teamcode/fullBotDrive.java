@@ -166,7 +166,18 @@ public class fullBotDrive extends LinearOpMode {
                     // Take into account the current position and choose a move after adding one to the position we want it to be.
                     switch (++posClaw % 4) {
 
-                        
+                        // Choice 0 is wrist on ground, open claw.
+                        case 0: {
+                            // Put wrist down.
+                            clawWrist.setPosition(0.70);
+
+                            // Wait a bit.
+                            wait(500);
+
+                            // Open claw.
+                            clawLeft.setPosition(0.50);
+                            clawRight.setPosition(0.35);
+                        }
 
                         // Choice 1 is pick up pixel, wrist back, raise arm.
                         case 1: {
@@ -175,7 +186,7 @@ public class fullBotDrive extends LinearOpMode {
                             clawRight.setPosition(0.15);
 
                             // Wait a bit.
-                            sleep(150);
+                            sleep(500);
 
                             // Lift arm and wrist back.
                             clawWrist.setPosition(0.30);
@@ -202,10 +213,10 @@ public class fullBotDrive extends LinearOpMode {
                             sleep(500);
 
                             // Move robot back.
-                            frontLeft.setPower(-0.5);
-                            frontRight.setPower(-0.5);
-                            backLeft.setPower(-0.5);
-                            backRight.setPower(-0.5);
+                            frontLeft.setPower(-0.15);
+                            frontRight.setPower(-0.15);
+                            backLeft.setPower(-0.15);
+                            backRight.setPower(-0.15);
 
                             // Retract slider.
                             viperSlider.setPower(0.50);
@@ -224,19 +235,6 @@ public class fullBotDrive extends LinearOpMode {
                             sliderArm.setTargetPosition(100);
 
                             break;
-                        }
-
-                        // Choice 3 puts the slider arm down, wrist down, opens claw.
-                        case 3: {
-                            // Put the slider arm on the ground.
-                            sliderArm.setTargetPosition(0);
-
-                            // Put the wrist on the ground.
-                            clawWrist.setPosition(0.70);
-
-                            // Open the claw.
-                            clawLeft.setPosition(0.50);
-                            clawRight.setPosition(0.35);
                         }
                     }
                 }
