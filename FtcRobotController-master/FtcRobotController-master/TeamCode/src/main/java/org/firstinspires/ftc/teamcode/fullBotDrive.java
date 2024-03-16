@@ -186,7 +186,7 @@ public class fullBotDrive extends LinearOpMode {
                             clawRight.setPosition(0.15);
 
                             // Wait a bit.
-                            sleep(500);
+                            sleep(150);
 
                             // Lift arm and wrist back.
                             clawWrist.setPosition(0.30);
