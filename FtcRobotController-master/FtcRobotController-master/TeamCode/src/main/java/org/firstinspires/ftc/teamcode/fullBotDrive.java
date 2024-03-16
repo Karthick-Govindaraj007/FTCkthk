@@ -223,11 +223,14 @@ public class fullBotDrive extends LinearOpMode {
                             // Wait for a bit.
                             sleep(1000);
 
+                            // Wrist back.
+                            clawWrist.setPosition(0.30);
+
                             // Stop viper slider.
                             viperSlider.setPower(0);
 
                             // Lower arm but keep off ground.
-                            sliderArm.setTargetPosition(200);
+                            sliderArm.setTargetPosition(300);
                         }
                     }
                 }
@@ -283,8 +286,16 @@ public class fullBotDrive extends LinearOpMode {
                 }
             }
 
-            // Have claw change direction as viper moves.
-            // Have slider change length of travel as arm moves.
+            // Set to run using encoder temporarily and reset to 0 for calculations.
+            viperSlider.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            viperSlider.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            // TODO: Add the code to manipulate slider length based on arm here.
+
+            // Reset slider to run without encoder here.
+            viperSlider.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            // TODO: Add the code to align wrist to backboard here.
         }
     }
 }
