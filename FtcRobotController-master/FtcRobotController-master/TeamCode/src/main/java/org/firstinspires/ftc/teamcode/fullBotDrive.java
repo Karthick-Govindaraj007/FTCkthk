@@ -168,10 +168,6 @@ public class fullBotDrive extends LinearOpMode {
 
                         // Choice 0 is wrist on ground, open claw.
                         case 0: {
-
-                            // Put slider arm down.
-                            sliderArm.setTargetPosition(0);
-
                             // Put wrist down.
                             clawWrist.setPosition(0.70);
 
@@ -264,15 +260,18 @@ public class fullBotDrive extends LinearOpMode {
                     if (gamepad2.left_stick_y != 0) {
 
                         // Check if the position to be set is less than 0 and set it to 0.
-                        // 0.73 is the position where the claw is straight.
-                        // Otherwise, set the position to the current added to the value of the stick.
                         if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 < 0.29) {
                             clawWrist.setPosition(0.30);
                         } // 0.30 is the position just before the claw will touch the viper.
 
                         // Check if the position is set to more than 1 and set it to 1.
+                        else if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 > 0.73) {
+                            clawWrist.setPosition(0.73);
+                        } // 0.73 is the position where the claw is straight.
+
+                        // Otherwise, set the position to the current added to the value of the stick.
                         else {
-                            clawWrist.setPosition(Math.min(clawWrist.getPosition() - gamepad2.left_stick_y / 250, 0.73));
+                            clawWrist.setPosition(clawWrist.getPosition() - gamepad2.left_stick_y / 250);
                         }
                     }
                 } else {
@@ -290,8 +289,6 @@ public class fullBotDrive extends LinearOpMode {
                     }
                 }
             }
-
-
 
             // Have claw change direction as viper moves.
             // Have slider change length of travel as arm moves.
