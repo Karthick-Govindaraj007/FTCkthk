@@ -166,12 +166,7 @@ public class fullBotDrive extends LinearOpMode {
                     // Take into account the current position and choose a move after adding one to the position we want it to be.
                     switch (++posClaw % 4) {
 
-                        // Choice 0 is wrist on ground, open claw.
-                        case 0: {
-                            // Open claw.
-                            clawLeft.setPosition(0.50);
-                            clawRight.setPosition(0.35);
-                        }
+                        
 
                         // Choice 1 is pick up pixel, wrist back, raise arm.
                         case 1: {
