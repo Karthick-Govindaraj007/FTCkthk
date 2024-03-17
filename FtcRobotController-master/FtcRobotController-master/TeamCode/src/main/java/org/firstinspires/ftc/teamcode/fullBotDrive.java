@@ -13,6 +13,8 @@ public class fullBotDrive extends LinearOpMode {
 
     double speedFactor = 1.0;
 
+    double lastPressed = 0;
+
     // Define All Motors
     DcMotor frontLeft = null;
     DcMotor frontRight = null;
@@ -145,155 +147,62 @@ public class fullBotDrive extends LinearOpMode {
                 posClaw = 0;
             }
 
-            // If autoplace is active, pick up pixel automatically
-            if (autoPlace) {
-                if (gamepad2.left_stick_button) {
+            // Check if the gamepad1 a button is pressed and toggle to slow speed.
+            if (gamepad1.a && System.currentTimeMillis() - lastPressed > 375) {
+                if (speedFactor > 0.5) {
+                    speedFactor = 0.25;
+                } else {
+                    speedFactor = 1;
+                }
+                lastPressed = System.currentTimeMillis();
+            }
 
-                    // Take into account the current position and choose a move after adding one to the position we want it to be.
-                    switch (posClaw++ % 3) {
+            // If the left bumper on gamepad 2 is active, set the claw to open up.
+            if (gamepad2.left_bumper) {
+                clawLeft.setPosition(0.50);
+                clawRight.setPosition(0.35);
+            }
 
-                        // Choice 0 is wrist on ground, open claw.
-                        case 0: {
-                            // Put arm down.
-                            sliderArm.setTargetPosition(0);
+            // If the right bumper on gamepad 2 is active, set the claw to close.
+            else if (gamepad2.right_bumper) {
+                clawLeft.setPosition(0.25);
+                clawRight.setPosition(0.15);
+            }
 
-                            // Wait a bit.
-                            sleep(250);
+            // Set the viper slider to the current power of gamepad 2's right stick's y.
+            viperSlider.setPower(gamepad2.right_stick_y);
 
-                            // Put wrist down.
-                            clawWrist.setPosition(0.66);
+            // Engage wrist with locks if the locks are active.
+            if (locksActive) {
 
-                            // Wait a bit.
-                            sleep(500);
+                if (gamepad2.left_stick_y != 0) {
 
-                            // Open claw.
-                            clawLeft.setPosition(0.50);
-                            clawRight.setPosition(0.35);
+                    // Check if the position to be set is less than 0 and set it to 0.
+                    if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 < 0) {
+                        clawWrist.setPosition(0);
+                    } // 0.30 is the position just before the claw will touch the viper.
 
-                            break;
-                        }
+                    // Check if the position is set to more than 1 and set it to 1.
+                    else if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 > 1) {
+                        clawWrist.setPosition(1);
+                    } // 0.66 is the position where the claw is parallel to the ground.
 
-                        // Choice 1 is pick up pixel, wrist back, raise arm.
-                        case 1: {
-                            // Close claw.
-                            clawLeft.setPosition(0.25);
-                            clawRight.setPosition(0.15);
-
-                            // Wait a bit.
-                            sleep(500);
-
-                            // Lift arm and wrist back. Align wrist with backboard.
-                            clawWrist.setPosition(0.30); // align here
-                            sliderArm.setTargetPosition(200);
-                            break;
-                        }
-
-                        // Choice 2 extends slider, places pixel, retracts slider, moves bot back.
-                        case 2: {
-
-                            // Reset the encoder values to 0.
-                            viperSlider.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-                            // Set target to 0.
-                            viperSlider.setTargetPosition(0);
-
-                            // Set to run using encoder temporarily for calculations.
-                            viperSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                            // Set viper slider power on.
-                            viperSlider.setPower(1);
-
-                            // Set the viperSlider to the correct position considering the current position of the arm and the angles on the field.
-//                            viperSlider.setTargetPosition((int) ((viperSlider.getCurrentPosition() + 384) * (Math.cos(sliderArm.getCurrentPosition() - 360) * 360 / 5281.1 + 28.5) / (Math.cos()) - 384));
-
-                            // Wait for a bit.
-                            sleep(1000);
-
-                            // Open claw.
-                            clawLeft.setPosition(0.50);
-                            clawRight.setPosition(0.35);
-
-                            // Wait for a bit.
-                            sleep(500);
-
-                            // Move robot back.
-                            frontLeft.setPower(-0.25);
-                            frontRight.setPower(-0.25);
-                            backLeft.setPower(-0.25);
-                            backRight.setPower(-0.25);
-
-                            // Move viper slider back.
-                            viperSlider.setTargetPosition(0);
-
-                            // Close claw.
-                            clawLeft.setPosition(0.25);
-                            clawRight.setPosition(0.15);
-
-                            // Wait for a bit.
-                            sleep(1000);
-
-                            // Wrist back.
-                            clawWrist.setPosition(0.30);
-
-                            // Lower arm but keep off ground.
-                            sliderArm.setTargetPosition(300);
-
-                            // Stop slider.
-                            viperSlider.setPower(0);
-
-                            // Reset slider to run without encoder here.
-                            viperSlider.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                        }
+                    // Otherwise, set the position to the current added to the value of the stick.
+                    else {
+                        clawWrist.setPosition(clawWrist.getPosition() - gamepad2.left_stick_y / 250);
                     }
                 }
             } else {
-                // If the left bumper on gamepad 2 is active, set the claw to open up.
-                if (gamepad2.left_bumper) {
-                    clawLeft.setPosition(0.50);
-                    clawRight.setPosition(0.35);
-                }
+                if (gamepad2.left_stick_y != 0) {
 
-                // If the right bumper on gamepad 2 is active, set the claw to close.
-                else if (gamepad2.right_bumper) {
-                    clawLeft.setPosition(0.25);
-                    clawRight.setPosition(0.15);
-                }
+                    // Check if the position to be set is less than 0 and set it to 0.
+                    if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 < 0) {
+                        clawWrist.setPosition(0);
+                    } // 0.30 is the position just before the claw will touch the viper.
 
-                // Set the viper slider to the current power of gamepad 2's right stick's y.
-                viperSlider.setPower(gamepad2.right_stick_y);
-
-                // Engage wrist with locks if the locks are active.
-                if (locksActive) {
-
-                    if (gamepad2.left_stick_y != 0) {
-
-                        // Check if the position to be set is less than 0 and set it to 0.
-                        if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 < 0) {
-                            clawWrist.setPosition(0);
-                        } // 0.30 is the position just before the claw will touch the viper.
-
-                        // Check if the position is set to more than 1 and set it to 1.
-                        else if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 > 1) {
-                            clawWrist.setPosition(1);
-                        } // 0.66 is the position where the claw is parallel to the ground.
-
-                        // Otherwise, set the position to the current added to the value of the stick.
-                        else {
-                            clawWrist.setPosition(clawWrist.getPosition() - gamepad2.left_stick_y / 250);
-                        }
-                    }
-                } else {
-                    if (gamepad2.left_stick_y != 0) {
-
-                        // Check if the position to be set is less than 0 and set it to 0.
-                        if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 < 0) {
-                            clawWrist.setPosition(0);
-                        } // 0.30 is the position just before the claw will touch the viper.
-
-                        // Otherwise, set the position to the current added to the value of the stick.
-                        else {
-                            clawWrist.setPosition(clawWrist.getPosition() - gamepad2.left_stick_y / 250);
-                        }
+                    // Otherwise, set the position to the current added to the value of the stick.
+                    else {
+                        clawWrist.setPosition(clawWrist.getPosition() - gamepad2.left_stick_y / 250);
                     }
                 }
             }

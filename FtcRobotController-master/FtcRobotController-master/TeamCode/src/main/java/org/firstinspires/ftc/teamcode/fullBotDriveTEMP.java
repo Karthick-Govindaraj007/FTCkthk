@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 // Send Code And Operating Mode To Game Board
-@TeleOp(name = "Full Bot Drive TEMP", group = "MCA EAGLES PROGRAMS")
+@TeleOp(name = "Full Bot Drive TEMP AUTOPLACE EXPERIMENTAL", group = "MCA EAGLES PROGRAMS")
 public class fullBotDriveTEMP extends LinearOpMode {
 
     double speedFactor = 1.0;
