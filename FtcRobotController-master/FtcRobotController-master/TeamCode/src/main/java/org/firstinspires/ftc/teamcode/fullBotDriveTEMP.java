@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 // Send Code And Operating Mode To Game Board
-@TeleOp(name = "Full Bot Drive", group = "MCA EAGLES PROGRAMS")
-public class fullBotDrive extends LinearOpMode {
+@TeleOp(name = "Full Bot Drive TEMP", group = "MCA EAGLES PROGRAMS")
+public class fullBotDriveTEMP extends LinearOpMode {
 
     double speedFactor = 1.0;
 
@@ -72,7 +72,7 @@ public class fullBotDrive extends LinearOpMode {
         boolean locksActive = true;
 
         // Make auto placer variable.
-        boolean autoPlace = false;
+        boolean autoPlace = true;
 
         // Make an int to store the current position of the claw setup.
         int posClaw = 0;
@@ -297,6 +297,8 @@ public class fullBotDrive extends LinearOpMode {
                     }
                 }
             }
+
+            // TODO: Add the code to align wrist to backboard here.
         }
     }
 }
