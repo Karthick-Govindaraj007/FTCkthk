@@ -32,7 +32,6 @@ package org.firstinspires.ftc.robotcontroller.external.samples;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -78,7 +77,7 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
 
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
-        telemetry.addData(">", "Touch Play to start OpMode");
+        telemetry.addData(">", "Touch START to start OpMode");
         telemetry.update();
         waitForStart();
 
@@ -121,13 +120,13 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
         webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
         webcam2 = hardwareMap.get(WebcamName.class, "Webcam 2");
         CameraName switchableCamera = ClassFactory.getInstance()
-                .getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
+            .getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
 
         // Create the vision portal by using a builder.
         visionPortal = new VisionPortal.Builder()
-                .setCamera(switchableCamera)
-                .addProcessor(aprilTag)
-                .build();
+            .setCamera(switchableCamera)
+            .addProcessor(aprilTag)
+            .build();
 
     }   // end method initAprilTag()
 

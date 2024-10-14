@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -13,20 +14,18 @@ public class fullBotDrive extends LinearOpMode {
 
     double speedFactor = 1.0;
 
-    double lastPressed = 0;
-
     // Define All Motors
     DcMotor frontLeft = null;
     DcMotor frontRight = null;
     DcMotor backLeft = null;
     DcMotor backRight = null;
-    DcMotor viperSlider = null;
-    DcMotor sliderArm = null;
-    DcMotor suspensionArm = null;
-    Servo clawWrist = null;
-    Servo clawLeft = null;
-    Servo clawRight = null;
-    Servo planeLauncher = null;
+    DcMotor viperV = null;
+    DcMotor viperH = null;
+    DcMotor susL = null;
+    DcMotor susR = null;
+    Servo sClawL = null;
+    Servo sClawR = null;
+    CRServo intake = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -36,176 +35,111 @@ public class fullBotDrive extends LinearOpMode {
         frontRight = hardwareMap.dcMotor.get("Front_Right");
         backLeft = hardwareMap.dcMotor.get("Back_Left");
         backRight = hardwareMap.dcMotor.get("Back_Right");
-        viperSlider = hardwareMap.dcMotor.get("Viper_Slider");
-        sliderArm = hardwareMap.dcMotor.get("Slider_Rotation");
-        suspensionArm = hardwareMap.dcMotor.get("Suspension_Arm");
+        viperV = hardwareMap.dcMotor.get("Viper_Vertical");
+        viperH = hardwareMap.dcMotor.get("Viper_Horizontal");
+        susL = hardwareMap.dcMotor.get("Suspension_Left");
+        susR = hardwareMap.dcMotor.get("Suspension_Right");
 
-        // Hardware Map All Servos
-        planeLauncher = hardwareMap.servo.get("Plane_Launcher");
-        clawLeft = hardwareMap.servo.get("Claw_Left");
-        clawRight = hardwareMap.servo.get("Claw_Right");
-        clawWrist = hardwareMap.servo.get("Claw_Wrist");
+        // Hardware Map Servos
+        sClawL = hardwareMap.servo.get("Claw_Left");
+        sClawR = hardwareMap.servo.get("Claw_Right");
+        intake = hardwareMap.crservo.get("Intake");
 
         // Set The Motors To Brake
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        viperSlider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Reverse Direction Of One Side's Wheel Motors
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // Reverse Direction Of One Claw
-        clawRight.setDirection(Servo.Direction.REVERSE);
-
-        // Set The Slider Arm To Reset The Motor To 0 At Start And Set The Initial Target To Start Position
-        sliderArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        sliderArm.setTargetPosition(0);
-
-        // Set the motor to run to the position mode. (NOTE: YOU NEED A TARGET SET BEFORE THIS MODE IS ENGAGED TO PREVENT ERROR)
-        sliderArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        // Set the arm to the speedFactor power.
-        sliderArm.setPower(speedFactor);
-
-        // Make locks variable.
-        boolean locksActive = true;
-
-        // Make auto placer variable.
-        boolean autoPlace = false;
-
-        // Make an int to store the current position of the claw setup.
-        int posClaw = 0;
-
         // Only Start Code And Movement When Start Button Is Pressed
         waitForStart();
 
         while (opModeIsActive()) {
-
             // Set drivetrain to move based off of the inputs of the left and right sticks of gamepad 1.
             frontLeft.setPower((-gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x) * speedFactor);
             backLeft.setPower((-gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x) * speedFactor);
             frontRight.setPower((-gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x) * speedFactor);
             backRight.setPower((-gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x) * speedFactor);
 
-            // If the left trigger of gamepad 2 is activated, move the arm down. Set the target position up as the current position plus the value of our left trigger times a constant and our speedFactor.
-            if (gamepad2.left_trigger != 0) {
-                sliderArm.setTargetPosition((int) (sliderArm.getCurrentPosition() + speedFactor * 175 * gamepad2.left_trigger));
-            }
+            // TODO: Set viper motors to run using encoders.
 
-            // Also do the same thing for the right trigger but subtract instead.
-            else if (gamepad2.right_trigger != 0) {
-                sliderArm.setTargetPosition((int) (sliderArm.getCurrentPosition() - speedFactor * 175 * gamepad2.right_trigger));
-            }
-
-            // If the arm tries to go below the initial, set to to 0, the initial.
-            if (sliderArm.getTargetPosition() < 0) {
-                sliderArm.setTargetPosition(0);
-            }
-
-            // If the a button is pressed on gamepad 2, lower the suspension arm.
-            if (gamepad2.a) {
-                suspensionArm.setPower(1);
-            }
-
-            // If the b button is pressed on gamepad 2, raise the suspension arm.
-            else if (gamepad2.b) {
-                suspensionArm.setPower(-1);
-            }
-
-            // Otherwise, stop the arm.
-            else {
-                suspensionArm.setPower(0);
-            }
-
-            // If the dpad down button is pressed, set the plane launcher to down position and lock in.
-            if (gamepad2.dpad_down) {
-                planeLauncher.setPosition(0);
-            }
-
-            // If the dpad up button is pressed, set the plane launcher to up position and release plane.
-            else if (gamepad2.dpad_up) {
-                planeLauncher.setPosition(0.5);
-            }
-
-            // TODO: Add time since last press implementation.
-
-            // If gamepad 2 dpad left is pressed, toggle between true and false for autoPlace.
-            if (gamepad2.dpad_left && gamepad2.x) {
-                autoPlace = !autoPlace;
-            }
-
-            // If gamepad 2 dpad right is pressed, toggle between true and false for locksActive.
-            if (gamepad2.dpad_right && gamepad2.y) {
-                locksActive = !locksActive;
-            }
-
-            // Reset posClaw if right toggle is clicked down.
-            if (gamepad2.right_stick_button) {
-                posClaw = 0;
-            }
-
-            // Check if the gamepad1 a button is pressed and toggle to slow speed.
-            if (gamepad1.a && System.currentTimeMillis() - lastPressed > 375) {
-                if (speedFactor > 0.5) {
-                    speedFactor = 0.25;
-                } else {
-                    speedFactor = 1;
-                }
-                lastPressed = System.currentTimeMillis();
-            }
-
-            // If the left bumper on gamepad 2 is active, set the claw to open up.
-            if (gamepad2.left_bumper) {
-                clawLeft.setPosition(0.50);
-                clawRight.setPosition(0.35);
-            }
-
-            // If the right bumper on gamepad 2 is active, set the claw to close.
-            else if (gamepad2.right_bumper) {
-                clawLeft.setPosition(0.25);
-                clawRight.setPosition(0.15);
-            }
-
-            // Set the viper slider to the current power of gamepad 2's right stick's y.
-            viperSlider.setPower(gamepad2.right_stick_y);
-
-            // Engage wrist with locks if the locks are active.
-            if (locksActive) {
-
-                if (gamepad2.left_stick_y != 0) {
-
-                    // Check if the position to be set is less than 0 and set it to 0.
-                    if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 < 0) {
-                        clawWrist.setPosition(0);
-                    } // 0.30 is the position just before the claw will touch the viper.
-
-                    // Check if the position is set to more than 1 and set it to 1.
-                    else if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 > 1) {
-                        clawWrist.setPosition(1);
-                    } // 0.66 is the position where the claw is parallel to the ground.
-
-                    // Otherwise, set the position to the current added to the value of the stick.
-                    else {
-                        clawWrist.setPosition(clawWrist.getPosition() - gamepad2.left_stick_y / 250);
-                    }
-                }
+            if (-gamepad2.left_stick_y > 0) {
+                viperV.setPower(-gamepad2.left_stick_y * speedFactor);
+            } else if (-gamepad2.left_stick_y < 0) {
+                viperV.setPower(-gamepad2.left_stick_y * speedFactor);
             } else {
-                if (gamepad2.left_stick_y != 0) {
-
-                    // Check if the position to be set is less than 0 and set it to 0.
-                    if (clawWrist.getPosition() - gamepad2.left_stick_y / 250 < 0) {
-                        clawWrist.setPosition(0);
-                    } // 0.30 is the position just before the claw will touch the viper.
-
-                    // Otherwise, set the position to the current added to the value of the stick.
-                    else {
-                        clawWrist.setPosition(clawWrist.getPosition() - gamepad2.left_stick_y / 250);
-                    }
-                }
+                viperV.setPower(0);
             }
+
+            if (-gamepad2.right_stick_y > 0) {
+                viperH.setPower(-gamepad2.right_stick_y * speedFactor);
+            } else if (-gamepad2.right_stick_y < 0) {
+                viperH.setPower(-gamepad2.right_stick_y * speedFactor);
+            } else {
+                viperH.setPower(0);
+            }
+
+            if (gamepad2.b) {
+                susL.setPower(1);
+                susR.setPower(1);
+            } else if (gamepad2.a) {
+                susL.setPower(-1);
+                susR.setPower(-1);
+            } else {
+                susL.setPower(0);
+                susR.setPower(0);
+            }
+
+            if (gamepad2.right_trigger > 0) {
+                intake.setPower(1);
+            } else if (gamepad2.left_trigger > 0) {
+                intake.setPower(-1);
+            } else {
+                intake.setPower(0);
+            }
+
+            // TODO: Fix positions of claw servos.
+
+            if (gamepad2.x) {
+                sClawL.setPosition(0.5);
+                sClawR.setPosition(0.5);
+            } else if (gamepad2.y) {
+                sClawL.setPosition(0);
+                sClawR.setPosition(0);
+            }
+
+            if (gamepad1.a) {
+                speedFactor = 1.0;
+            } else if (gamepad2.b) {
+                speedFactor = 0.5;
+            }
+
+            telemetry.addData("Front Left Motor Power", frontLeft.getPower());
+            telemetry.addData("Front Left Motor Position", frontLeft.getCurrentPosition());
+            telemetry.addData("Front Right Motor Power", frontRight.getPower());
+            telemetry.addData("Front Right Motor Position", frontRight.getCurrentPosition());
+            telemetry.addData("Back Left Motor Power", backLeft.getPower());
+            telemetry.addData("Back Left Motor Position", backLeft.getCurrentPosition());
+            telemetry.addData("Back Right Motor Power", backRight.getPower());
+            telemetry.addData("Back Right Motor Position", backRight.getCurrentPosition());
+            telemetry.addData("Viper Vertical Motor Power", viperV.getPower());
+            telemetry.addData("Viper Vertical Motor Position", viperV.getCurrentPosition());
+            telemetry.addData("Viper Horizontal Motor Power", viperH.getPower());
+            telemetry.addData("Viper Horizontal Motor Position", viperH.getCurrentPosition());
+            telemetry.addData("Left Suspension Motor Power", susL.getPower());
+            telemetry.addData("Left Suspension Motor Position", susL.getCurrentPosition());
+            telemetry.addData("Right Suspension Motor Power", susR.getPower());
+            telemetry.addData("Right Suspension Motor Position", susR.getCurrentPosition());
+            telemetry.addData("Left Claw Servo Position", sClawL.getPosition());
+            telemetry.addData("Right Claw Servo Position", sClawR.getPosition());
+            telemetry.addData("Intake Motor Power", intake.getPower());
+            telemetry.addData("Speed Factor", speedFactor);
+
+            telemetry.update();
         }
     }
 }
